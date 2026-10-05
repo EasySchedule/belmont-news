@@ -1,6 +1,9 @@
 # Belmont News
 
-The Belmont News site. Published hourly to https://belmont-county-news-b68j.bolt.host/
+The Belmont News site. Published hourly to https://belmont-news.bolt.host/
+
+The Bolt project moved off `belmont-county-news-b68j.bolt.host`, which now serves only
+Bolt's "Website not found" page. The current host is `belmont-news.bolt.host`.
 
 ## How publishing works
 
