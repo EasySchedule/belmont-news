@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belmont News</title>
+<meta name="description" content="Belmont News - local reporting for Belmont County, published hourly.">
+<style>
+:root{--ink:#15171a;--muted:#5b6470;--rule:#dfe3e8;--accent:#0b5cab;--bg:#fbfbfa}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+header{border-bottom:2px solid var(--ink);padding:28px 0 14px}
+h1{margin:0;font-size:34px;letter-spacing:-0.02em}
+h1 a{color:var(--ink);text-decoration:none}
+.tag{margin:6px 0 0;color:var(--muted);font-size:14px}
+main{padding:26px 0 48px}
+.item{border-bottom:1px solid var(--rule);padding:18px 0}
+.item h2{margin:0 0 6px;font-size:21px;line-height:1.3}
+.item h2 a{color:var(--accent);text-decoration:none}
+.item h2 a:hover{text-decoration:underline}
+.meta{color:var(--muted);font-size:13px}
+.empty{color:var(--muted);padding:26px 0}
+footer{border-top:1px solid var(--rule);padding:18px 0 40px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1><a href="/">Belmont News</a></h1>
+  <p class="tag">Local reporting for Belmont County. One story an hour, every hour of the day.</p>
+</header>
+<main id="items">
+  <p class="empty">Loading the latest&hellip;</p>
+</main>
+<footer>Published hourly. Every story is fact-checked by the Belmont News QA desk before it runs.</footer>
+</div>
+<script>
+fetch('/data/stories.json?t=' + Date.now())
+  .then(function (r) { return r.ok ? r.json() : []; })
+  .then(render)
+  .catch(function () { render([]); });
+
+function render(items) {
+  var el = document.getElementById('items');
+  if (!items.length) {
+    el.innerHTML = '<p class="empty">No stories published yet. The first edition is on the way.</p>';
+    return;
+  }
+  el.innerHTML = items.map(function (s) {
+    var d = s.published_at ? new Date(s.published_at) : null;
+    var when = d && !isNaN(d)
+      ? d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+      : '';
+    return '<article class="item">' +
+      '<h2><a href="' + esc(s.slug ? '/' + s.slug + '/' : '#') + '">' + esc(s.title) + '</a></h2>' +
+      '<p class="meta">' + esc(s.category || 'news') + (when ? ' &middot; ' + esc(when) : '') + '</p>' +
+      '</article>';
+  }).join('');
+}
+
+function esc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+</script>
+</body>
+</html>
